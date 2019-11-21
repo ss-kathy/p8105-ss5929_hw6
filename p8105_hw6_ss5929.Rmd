@@ -41,6 +41,9 @@ add_predictions(fit_0) %>%
   ggplot(aes(x=pred,y=resid))+geom_point()
 
 ```
+*comment*
+
+Build the model through global anova and choose factor which will have significant effect on the outcome according to p-value which are greater than 0.05. 
 
 ## compare the model
 ```{r}
@@ -81,6 +84,10 @@ pivot_longer(
   ggplot(aes(x = model, y = rmse)) + geom_violin()
 
 ```
+
+*comment*
+
+According to the plot of rmse, we can see that the model_0 will have least rmse which will be prefered. Model_1 has the highest rmse which will increase bias. However, we can also see that modeL_0 has a little bit greater variance which can be due to much predictors.
 
 # Problem 2
 read data
