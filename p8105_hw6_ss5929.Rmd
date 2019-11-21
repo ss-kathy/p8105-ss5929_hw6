@@ -1,0 +1,44 @@
+---
+title: "Untitled"
+author: "Shuyi SHEN"
+date: "11/15/2019"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(broom)
+library(modelr)
+library(ggplot2)
+```
+
+# Problem 1
+```{r}
+birthweight = read.csv("birthweight.csv") %>%
+        janitor::clean_names() %>%
+  mutate(babysex = factor(babysex),
+         frace   = factor(frace),
+         malform = factor(malform),
+         mrace   = factor(frace))
+  
+
+is.na(birthweight) %>% summary()
+```
+
+```{r}
+fit = lm(bwt~.,data = birthweight)
+anova(fit)
+
+```
+
+
+```{r}
+fit_0 = lm(bwt~babysex+bhead+blength+delwt+fincome+frace+gaweeks+mheight+momage+mrace+parity+ppbmi+smoken,data = birthweight)
+
+birthweight %>% 
+add_residuals(fit_0) %>% 
+add_predictions(fit_0) %>% 
+  ggplot(aes(x=pred,y=resid))+geom_point()
+
+```
+
