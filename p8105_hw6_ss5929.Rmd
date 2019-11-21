@@ -100,3 +100,52 @@ weather_df =
 ```
 
 
+```{r}
+
+boot_sample = function(df) {
+  sample_frac(df, replace = TRUE)
+}
+
+
+weather_df= weather_df %>% select(tmax,tmin)
+
+boot_straps = 
+  data_frame(
+    strap_number = 1:5000,
+    strap_sample = rerun(5000, boot_sample(weather_df))
+  )
+
+
+results = 
+  boot_straps %>% 
+  mutate(
+    models = map(strap_sample,~lm(tmax~tmin,data = .x)),
+    a      = map(models,broom::glance),
+    b      = map(models,broom::tidy),
+  ) %>% 
+  select(-models,-strap_sample) %>%
+  unnest_wider(a) %>% 
+  select(r.squared,b) %>% 
+  unnest_wider(b) %>% 
+  select(r.squared,estimate) %>% 
+  unnest_wider(estimate)
+
+result_plot=results %>% 
+            rename(r2 = r.squared) %>% 
+            rename(b1 = ...1) %>% 
+            rename(b2 = ...2) %>% 
+            mutate(l = log(b1*b2)) 
+
+quantile(result_plot$r2,probs = c(0.025,0.975))
+quantile(result_plot$l,probs = c(0.025,0.975))
+
+result_plot %>% 
+  ggplot(aes(x=r2))+geom_density()
+
+result_plot %>% 
+  ggplot(aes(x=l))+geom_density()
+
+```
+
+
+
