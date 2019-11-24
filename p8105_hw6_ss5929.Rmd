@@ -11,7 +11,7 @@ library(broom)
 library(modelr)
 library(ggplot2)
 
-set.seed(1)
+
 ```
 
 # Problem 1
@@ -19,32 +19,47 @@ set.seed(1)
 birthweight = read.csv("birthweight.csv") %>%
         janitor::clean_names() %>%
   mutate(babysex = factor(babysex),
-         frace   = factor(frace),
          malform = factor(malform),
-         mrace   = factor(frace))
+         frace   = factor(frace),
+         mrace   = factor(mrace))
   
 
 is.na(birthweight) %>% summary()
 ```
+*comment*
 
-```{r}
-fit = lm(bwt~.,data = birthweight)
-anova(fit)
+**birthweight**
 
-```
+The dataset includes `r ncol(birthweight)` variables and `r nrow(birthweight)` observations. There are four variables including babysex, malform, frace and mrace we need to factor and there are no NA values after checking.
+
 
 ```{r,message = FALSE,warning=FALSE}
-fit_0 = lm(bwt~babysex+bhead+blength+delwt+fincome+frace+gaweeks+mheight+momage+mrace+parity+ppbmi+smoken,data = birthweight)
+fit = lm(bwt~.,data = birthweight)
+summary(fit)
 
+fit_0 = lm(bwt~babysex+bhead+blength+delwt+gaweeks+parity+smoken,data = birthweight)
+```
+*comment*
+
+After doing t-test to all variables, I build the model by choosing those having significant effect on bwt according to p-value. For those dummy variables, only one level is significant will be omitted.
+
+```{r,message = FALSE,warning=FALSE}
 birthweight %>% 
 add_residuals(fit_0) %>% 
 add_predictions(fit_0) %>% 
-  ggplot(aes(x=pred,y=resid))+geom_point()
+  ggplot(aes(x=pred,y=resid))+geom_point()+
+  geom_smooth(method = "lm")+
+  labs(
+    x = "predictions",
+    y = "residuals",
+    title = "The distribution of predictions and residuals"
+  )
 
 ```
 *comment*
 
-Build the model through global anova and choose factor which will have significant effect on the outcome according to p-value which are greater than 0.05. 
+According the plot, we can see the points are approximately around 0, when predictions are larger, residuals will decrease.
+
 
 ## compare the model
 ```{r,warning=FALSE}
@@ -150,19 +165,25 @@ quantile(result_plot$l,probs = c(0.025,0.975))
 
 *comment*
 
-We can see the confidence interval for r^2 is (0.89,0.93) and log(beta0*beta1) is (1.96,2.05).
+The confidence interval for r^2 is (0.89,0.93) and log(beta0*beta1) is (1.96,2.05).
 
 ```{r,message = FALSE}
 
 result_plot %>% 
-  ggplot(aes(x=r2))+geom_density()
+  ggplot(aes(x=r2))+geom_density()+
+  labs(
+    title = "The distribution of r^2"
+  )
 
 result_plot %>% 
-  ggplot(aes(x=l))+geom_density()
+  ggplot(aes(x=l))+geom_density()+
+  labs(
+    title = "The distribution of log(beta0*beta1)"
+  )
 
 ```
 
 *comment*
 
-From the plot, we can see the distribution of r^2 and log(beta0*beta1) are all not strictly normal distribution and left skewed.
+From the plot, we can see the distribution of r^2 and log(beta0*beta1) are nearly normal distribution with left skew.
 
