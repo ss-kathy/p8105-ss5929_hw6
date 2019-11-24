@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "hw6_ss5929"
 author: "Shuyi SHEN"
 date: "11/15/2019"
 output: github_document
@@ -10,6 +10,8 @@ library(tidyverse)
 library(broom)
 library(modelr)
 library(ggplot2)
+
+set.seed(1)
 ```
 
 # Problem 1
@@ -32,7 +34,7 @@ anova(fit)
 ```
 
 
-```{r}
+```{r,message = FALSE,warning=FALSE}
 fit_0 = lm(bwt~babysex+bhead+blength+delwt+fincome+frace+gaweeks+mheight+momage+mrace+parity+ppbmi+smoken,data = birthweight)
 
 birthweight %>% 
@@ -46,7 +48,7 @@ add_predictions(fit_0) %>%
 Build the model through global anova and choose factor which will have significant effect on the outcome according to p-value which are greater than 0.05. 
 
 ## compare the model
-```{r}
+```{r,warning=FALSE}
 fit_1 = lm(bwt~blength+gaweeks,data=birthweight)
 fit_2 = lm(bwt~bhead+blength+babysex, data=birthweight)
 
@@ -107,7 +109,7 @@ weather_df =
 ```
 
 
-```{r}
+```{r,message = FALSE, warning=FALSE}
 
 boot_sample = function(df) {
   sample_frac(df, replace = TRUE)
@@ -145,6 +147,13 @@ result_plot=results %>%
 
 quantile(result_plot$r2,probs = c(0.025,0.975))
 quantile(result_plot$l,probs = c(0.025,0.975))
+```
+
+*comment*
+
+We can see the confidence interval for r^2 is (0.89,0.93) and log(beta0*beta1) is (1.96,2.05).
+
+```{r,message = FALSE}
 
 result_plot %>% 
   ggplot(aes(x=r2))+geom_density()
