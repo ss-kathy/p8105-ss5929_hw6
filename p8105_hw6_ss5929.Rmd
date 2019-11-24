@@ -33,7 +33,6 @@ anova(fit)
 
 ```
 
-
 ```{r,message = FALSE,warning=FALSE}
 fit_0 = lm(bwt~babysex+bhead+blength+delwt+fincome+frace+gaweeks+mheight+momage+mrace+parity+ppbmi+smoken,data = birthweight)
 
@@ -163,5 +162,7 @@ result_plot %>%
 
 ```
 
+*comment*
 
+From the plot, we can see the distribution of r^2 and log(beta0*beta1) are all not strictly normal distribution and left skewed.
 
